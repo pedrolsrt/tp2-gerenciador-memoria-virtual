@@ -2,9 +2,13 @@
 
 Simulador de gerenciamento de memória virtual desenvolvido em linguagem C para a disciplina de Sistemas Operacionais da PUC Minas.
 
+---
+
 ## Autor
 
 Pedro Lucas Soares Rezende
+
+---
 
 ## Disciplina
 
@@ -12,11 +16,13 @@ Sistemas Operacionais
 
 Professor: Lucas Bragança da Silva
 
+---
+
 ## Objetivo
 
-O objetivo deste projeto é implementar um simulador de memória virtual capaz de traduzir endereços lógicos em endereços físicos utilizando estruturas e técnicas clássicas de gerenciamento de memória presentes em sistemas operacionais modernos.
+O objetivo deste projeto é implementar um simulador de memória virtual capaz de traduzir endereços lógicos em endereços físicos utilizando estruturas clássicas de gerenciamento de memória presentes em sistemas operacionais.
 
-A solução implementa:
+A implementação contempla:
 
 - Tabela de Páginas (Page Table);
 - Translation Lookaside Buffer (TLB);
@@ -78,7 +84,7 @@ tp2-gerenciador-memoria-virtual/
 
 ## Funcionamento
 
-O simulador recebe uma sequência de endereços lógicos e executa as seguintes etapas:
+O simulador recebe uma sequência de endereços lógicos e executa o seguinte fluxo:
 
 1. Extrai o número da página e o deslocamento (offset);
 2. Consulta o TLB;
@@ -86,25 +92,25 @@ O simulador recebe uma sequência de endereços lógicos e executa as seguintes 
 4. Em caso de Page Fault, carrega a página do BACKING_STORE.bin;
 5. Atualiza a tabela de páginas;
 6. Atualiza o TLB;
-7. Calcula o endereço físico;
-8. Lê o valor armazenado na memória física;
+7. Calcula o endereço físico correspondente;
+8. Obtém o valor armazenado na memória;
 9. Exibe o resultado da tradução.
 
 ---
 
 ## Translation Lookaside Buffer (TLB)
 
-O TLB foi implementado com 16 entradas e tem como objetivo reduzir a quantidade de acessos à tabela de páginas.
+O TLB possui 16 entradas e é utilizado para acelerar o processo de tradução de endereços.
 
-A política de substituição utilizada é FIFO (First In, First Out). Quando o TLB está cheio, a entrada mais antiga é substituída pela nova tradução.
+A política de substituição adotada foi FIFO (First In, First Out). Quando o TLB atinge sua capacidade máxima, a entrada mais antiga é substituída pela nova tradução.
 
 ---
 
 ## Tabela de Páginas
 
-A tabela de páginas possui 256 entradas e armazena as informações necessárias para o mapeamento entre páginas virtuais e quadros físicos.
+A tabela de páginas possui 256 entradas responsáveis pelo mapeamento entre páginas virtuais e quadros físicos.
 
-Cada entrada contém:
+Cada entrada armazena:
 
 - Número do quadro físico;
 - Bit de validade;
@@ -117,13 +123,13 @@ Cada entrada contém:
 
 Quando uma página não está presente na memória física:
 
-1. O simulador detecta a falta de página;
+1. O simulador identifica a falta de página;
 2. Localiza a página correspondente no arquivo BACKING_STORE.bin;
 3. Carrega a página para a memória física;
 4. Atualiza a tabela de páginas;
 5. Atualiza o TLB.
 
-Caso não existam quadros livres disponíveis, é realizada a substituição de páginas utilizando o algoritmo Aging.
+Caso não existam quadros livres, uma página vítima é selecionada para substituição.
 
 ---
 
@@ -215,6 +221,4 @@ report/relatorio_tp2_pedro_lucas_soares_rezende.pdf
 
 ## Considerações Finais
 
-Este projeto permitiu aplicar na prática conceitos fundamentais de gerenciamento de memória estudados na disciplina de Sistemas Operacionais, proporcionando uma compreensão mais aprofundada dos mecanismos utilizados para tradução de endereços, paginação por demanda, substituição de páginas e otimização de acessos à memória.
-
-A implementação integra TLB, tabela de páginas, memória física e algoritmo Aging, simulando de forma consistente o funcionamento básico de um sistema de memória virtual.
+Este projeto permitiu aplicar na prática conceitos fundamentais de gerenciamento de memória estudados na disciplina de Sistemas Operacionais. A implementação integra tabela de páginas, TLB, paginação por demanda, tratamento de faltas de página e substituição utilizando o algoritmo Aging, simulando de forma consistente o funcionamento básico de um sistema de memória virtual.
