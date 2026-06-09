@@ -14,16 +14,16 @@ Professor: Lucas Bragança da Silva
 
 ## Objetivo
 
-O objetivo deste projeto é simular o funcionamento de um sistema de memória virtual, realizando a tradução de endereços lógicos para endereços físicos por meio de estruturas clássicas utilizadas em sistemas operacionais modernos.
+O objetivo deste projeto é implementar um simulador de memória virtual capaz de traduzir endereços lógicos em endereços físicos utilizando estruturas e técnicas clássicas de gerenciamento de memória presentes em sistemas operacionais modernos.
 
-A implementação contempla:
+A solução implementa:
 
 - Tabela de Páginas (Page Table);
 - Translation Lookaside Buffer (TLB);
 - Paginação por demanda;
 - Tratamento de Page Faults;
 - Substituição de páginas utilizando o algoritmo Aging;
-- Coleta de estatísticas de desempenho.
+- Coleta de estatísticas de execução.
 
 ---
 
@@ -39,7 +39,7 @@ A implementação contempla:
 | Memória Física Total | 32.768 bytes |
 | Entradas do TLB | 16 |
 | Política do TLB | FIFO |
-| Política de Substituição de Páginas | Aging |
+| Política de Substituição | Aging |
 
 ---
 
@@ -47,6 +47,11 @@ A implementação contempla:
 
 ```text
 tp2-gerenciador-memoria-virtual/
+│
+├── data/
+│   ├── BACKING_STORE.bin
+│   ├── addresses_random.txt
+│   └── addresses_location.txt
 │
 ├── include/
 │   ├── config.h
@@ -62,12 +67,8 @@ tp2-gerenciador-memoria-virtual/
 │   ├── statistics.c
 │   └── tlb.c
 │
-├── data/
-│   ├── BACKING_STORE.bin
-│   ├── addresses_random.txt
-│   └── addresses_location.txt
-│
 ├── report/
+│   └── relatorio_tp2_pedro_lucas_soares_rezende.pdf
 │
 ├── Makefile
 └── README.md
@@ -77,9 +78,7 @@ tp2-gerenciador-memoria-virtual/
 
 ## Funcionamento
 
-O simulador recebe uma sequência de endereços lógicos como entrada.
-
-Para cada endereço informado, o programa executa os seguintes passos:
+O simulador recebe uma sequência de endereços lógicos e executa as seguintes etapas:
 
 1. Extrai o número da página e o deslocamento (offset);
 2. Consulta o TLB;
@@ -88,51 +87,49 @@ Para cada endereço informado, o programa executa os seguintes passos:
 5. Atualiza a tabela de páginas;
 6. Atualiza o TLB;
 7. Calcula o endereço físico;
-8. Obtém o valor armazenado na memória física;
-9. Exibe os resultados da tradução.
+8. Lê o valor armazenado na memória física;
+9. Exibe o resultado da tradução.
 
 ---
 
 ## Translation Lookaside Buffer (TLB)
 
-O TLB possui 16 entradas e é utilizado para acelerar o processo de tradução de endereços.
+O TLB foi implementado com 16 entradas e tem como objetivo reduzir a quantidade de acessos à tabela de páginas.
 
-A política de substituição adotada foi FIFO (First In, First Out).
-
-Quando o TLB atinge sua capacidade máxima, a entrada mais antiga é removida para dar lugar à nova tradução.
+A política de substituição utilizada é FIFO (First In, First Out). Quando o TLB está cheio, a entrada mais antiga é substituída pela nova tradução.
 
 ---
 
 ## Tabela de Páginas
 
-A tabela de páginas possui 256 entradas e é responsável pelo mapeamento entre páginas virtuais e quadros físicos.
+A tabela de páginas possui 256 entradas e armazena as informações necessárias para o mapeamento entre páginas virtuais e quadros físicos.
 
-Cada entrada armazena:
+Cada entrada contém:
 
 - Número do quadro físico;
 - Bit de validade;
 - Bit de referência;
-- Contador de envelhecimento (Aging Counter).
+- Contador de envelhecimento.
 
 ---
 
 ## Tratamento de Page Fault
 
-Quando uma página não está carregada na memória física:
+Quando uma página não está presente na memória física:
 
-1. O simulador identifica a falta de página;
+1. O simulador detecta a falta de página;
 2. Localiza a página correspondente no arquivo BACKING_STORE.bin;
-3. Carrega a página para um quadro disponível;
+3. Carrega a página para a memória física;
 4. Atualiza a tabela de páginas;
 5. Atualiza o TLB.
 
-Caso não existam quadros livres, uma página vítima é selecionada para substituição.
+Caso não existam quadros livres disponíveis, é realizada a substituição de páginas utilizando o algoritmo Aging.
 
 ---
 
 ## Algoritmo Aging
 
-A substituição de páginas é realizada utilizando o algoritmo Aging, uma aproximação do algoritmo LRU (Least Recently Used).
+A substituição de páginas foi implementada utilizando o algoritmo Aging, uma aproximação eficiente do algoritmo LRU (Least Recently Used).
 
 Cada página mantém:
 
@@ -145,13 +142,13 @@ Periodicamente:
 - O bit de referência é inserido no bit mais significativo;
 - O bit de referência é reiniciado.
 
-Quando a memória física está cheia, a página com menor contador de envelhecimento é escolhida como vítima.
+Quando a memória física está cheia, a página com menor contador de envelhecimento é selecionada para substituição.
 
 ---
 
 ## Estatísticas
 
-Ao final da execução são apresentadas as seguintes métricas:
+Ao final da execução, o simulador apresenta:
 
 - Número de endereços traduzidos;
 - Quantidade de Page Faults;
@@ -159,7 +156,7 @@ Ao final da execução são apresentadas as seguintes métricas:
 - Quantidade de TLB Hits;
 - Taxa de acerto do TLB.
 
-Essas informações permitem avaliar o comportamento do simulador e o impacto da localidade de referência sobre o desempenho do sistema.
+Essas métricas permitem avaliar o comportamento da memória virtual e a eficiência da utilização do TLB.
 
 ---
 
@@ -181,10 +178,20 @@ Utilizando o arquivo de endereços aleatórios:
 ./vm < data/addresses_random.txt
 ```
 
-Utilizando o arquivo com localidade de referência:
+Utilizando o arquivo de endereços com localidade de referência:
 
 ```bash
 ./vm < data/addresses_location.txt
+```
+
+---
+
+## Relatório
+
+O relatório técnico completo encontra-se na pasta:
+
+```text
+report/relatorio_tp2_pedro_lucas_soares_rezende.pdf
 ```
 
 ---
@@ -197,8 +204,8 @@ Utilizando o arquivo com localidade de referência:
 - Tabela de Páginas
 - Translation Lookaside Buffer (TLB)
 - FIFO
-- Page Fault
 - Demand Paging
+- Page Fault
 - Aging Algorithm
 - Aproximação de LRU
 - Gerenciamento de Memória
@@ -208,4 +215,6 @@ Utilizando o arquivo com localidade de referência:
 
 ## Considerações Finais
 
-Este projeto permitiu aplicar de forma prática conceitos fundamentais de gerenciamento de memória estudados na disciplina de Sistemas Operacionais, proporcionando uma compreensão mais aprofundada dos mecanismos utilizados pelos sistemas modernos para tradução de endereços, gerenciamento de páginas e otimização de acessos à memória.
+Este projeto permitiu aplicar na prática conceitos fundamentais de gerenciamento de memória estudados na disciplina de Sistemas Operacionais, proporcionando uma compreensão mais aprofundada dos mecanismos utilizados para tradução de endereços, paginação por demanda, substituição de páginas e otimização de acessos à memória.
+
+A implementação integra TLB, tabela de páginas, memória física e algoritmo Aging, simulando de forma consistente o funcionamento básico de um sistema de memória virtual.
